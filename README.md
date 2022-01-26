@@ -1,7 +1,7 @@
 # aliexpress-API-SDK
 Full files to do some daily actions like: updateStock from DB or getOrders
 
-# Hoy to Start
+# How to Start
 
 Firts, you need to follow the steps from the official aliexpress page. 
 Obviulsy you need to be a Seller of Aliexpress Marketplace.
