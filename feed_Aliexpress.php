@@ -6,7 +6,7 @@ include 'config.php';
 
 $mysqli = new mysqli($host, $user, $password, $db, $port);
 
-/* comprobar la conexión */
+/* check the connection */
 if ($mysqli->connect_errno) {
     printf("Falló la conexión: %s\n", $mysqli->connect_error);
     exit();
@@ -79,9 +79,9 @@ function getStock($sku_code, $mysqli)
 
     $busqueda = $sku_code;
 
-    /* Consultas de selección que devuelven un conjunto de resultados */
+    /*Make the query */
     if ($resultado = $mysqli->query("SELECT int_amount FROM stocks WHERE str_stock_ean = {$busqueda}")) {
-        printf("La selección devolvió %d filas.\n", $resultado->num_rows);
+        printf("The query Return %d files.\n", $resultado->num_rows);
         if ($resultado->num_rows != 0) {
 
             $EAN = mysqli_fetch_row($resultado)[0];
@@ -89,7 +89,7 @@ function getStock($sku_code, $mysqli)
             $EAN = 0;
         }
 
-        /* liberar el conjunto de resultados */
+        /* clean */
         $resultado->close();
         return $EAN;
     }
@@ -117,7 +117,7 @@ function updateStock($ID, $stock, $sku_code, $c, $sessionKey)
 
     $req2->setMutipleProductUpdateList(json_encode($mutiple_product_update_list));
 
-    echo "Del producto: " . $ID . " - actualizamos el ean: " . $sku_code . " - con stock: " . $stock;
+    echo "The ID product: " . $ID . " - and the ean: " . $sku_code . " - update with stock: " . $stock;
     echo "\n";
     
     $resp = $c->execute($req2, $sessionKey);
