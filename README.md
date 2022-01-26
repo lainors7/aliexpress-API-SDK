@@ -1,8 +1,7 @@
 # aliexpress-API-SDK
-Full files to do some daily actions like: updateStock from DB or getOrders
+Dosome daily actions like updateStock from DB or getOrders, with 3 simple files and SDK provided by Aliexpress.
 
 # How to Start
-
 Firts, you need to follow the steps from the official aliexpress page. 
 Obviulsy you need to be a Seller of Aliexpress Marketplace.
 
@@ -18,9 +17,23 @@ https://developers.aliexpress.com/en/doc.htm?spm=ae-es-pc.ae-university-es-pc-mo
 # Download SDK (in this project, I will use a PHP SDK)
 https://developers.aliexpress.com/en/doc.htm?spm=a219a.7386653.0.0.52cb9b710V1E5V&docId=108108&docType=1
 
+# Setting up
 Create a folder, and put in the SDK folder and rename it like "SDK". 
 Then go to "SDK/top/TopClient" and search "$appKey" and assign it the value of your AppKey and do the same with the "$secretKey" with your App Secret.
 
 Place it in the main folder, you now just should only see the "SDK" folder.
+
+Then clone the repo and move the files to this main folder. You wil see.
+
+/SDK
+README.md
+config-sample.php
+feed_Aliexpress.php
+ordersAliexpress.php
+
+Change the name of "config-sample.php" to just "config.php" and assign the value of the variables. (Database name, username, password, port, Host and SessionKey)
+
+It's done. Just execute the file that you need.
+
 
 
