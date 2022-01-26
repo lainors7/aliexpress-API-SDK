@@ -3,8 +3,6 @@
 include 'top/TopClient.php';
 include 'TopSdk.php';
 
-$sessionKey= '50000400a11OoXgkAoyosED1da7def9yjvfltERxfZEgS8OtyclIMi4GRx8jsbNIyr40';
-
 $c = new TopClient;
 $c->appkey;
 $c->secretKey;
