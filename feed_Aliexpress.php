@@ -61,13 +61,15 @@ function getEAN($ID, $c, $sessionKey, $mysqli)
     //var_dump($resp);
 
     $tam = $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku->count();
-
+    //var_dump ( $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku->ean_code);
+    //var_dump ( $resp->result[0]->aeop_ae_product_s_k_us);
+    echo "tam EAN: ". $tam;
     for ($i = 0; $i < $tam; $i++) {
-        echo $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku[$i]->sku_code;
+        echo $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku[$i]->ean_code;
         echo "\n";
         //LOOP THE EAN TO GET THE STOCK OF EACH
-        $sku_code = $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku[$i]->sku_code;
-
+        $sku_code = $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku[$i]->ean_code;
+        echo "El sku: ".$sku_code;
         $stock = getStock($sku_code, $mysqli);
         //AND UPDATE STOCK IN ALIEXPRESS
         updateStock($ID, $stock, $sku_code, $c, $sessionKey);
@@ -121,5 +123,5 @@ function updateStock($ID, $stock, $sku_code, $c, $sessionKey)
     echo "\n";
     
     $resp = $c->execute($req2, $sessionKey);
-    //var_dump($resp);
+    var_dump($resp);
 }
