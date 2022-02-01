@@ -42,8 +42,8 @@ for ($x = 1; $x < $total; $x++) { //search in all pages
 
     $total = $resp->result[0]->total_page; //Total pages
 
-    $log->log_msg("Total ID's:" . $total);
-    //echo "Total ID's:" . $total;
+    //$log->log_msg("Total Pages:" . $total);
+    //echo "Total Pages's:" . $total;
     
     //echo "\n";
 
@@ -90,7 +90,7 @@ function getEAN($ID, $c, $sessionKey, $mysqli,$log){
 }
 
 function getStock($sku_code, $mysqli, $log){
-
+    //My Personal Function to get Stock from my DB
     $busqueda = $sku_code;
 
     /*Make the query */
