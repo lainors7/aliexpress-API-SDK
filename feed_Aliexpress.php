@@ -19,10 +19,13 @@ $log = new Log(date('d_m_Y').'.log', 'feed_Aliexpress.php');
 $c = new TopClient;
 $c->appkey;
 $c->secretKey;
+
 //DOC https://developers.aliexpress.com/en/api.htm?spm=a219a.7386797.0.0.667e9b71LDSRea&source=search&docId=42384&docType=2
+
 $req = new AliexpressSolutionProductListGetRequest;
 $x = 1;
 $total = 2;
+
 for ($x = 1; $x < $total; $x++) { //search in all pages
 
     $aeop_a_e_product_list_query = new ItemListQuery;
@@ -41,6 +44,7 @@ for ($x = 1; $x < $total; $x++) { //search in all pages
 
     $log->log_msg("Total ID's:" . $total);
     //echo "Total ID's:" . $total;
+    
     //echo "\n";
 
     //var_dump($resp);
@@ -59,8 +63,7 @@ for ($x = 1; $x < $total; $x++) { //search in all pages
     }
 }
 
-function getEAN($ID, $c, $sessionKey, $mysqli,$log)
-{
+function getEAN($ID, $c, $sessionKey, $mysqli,$log){
     //DOC https://developers.aliexpress.com/en/api.htm?spm=a219a.7386653.0.0.65a99b71oRgD5c&source=search&docId=42383&docType=2
     $req1 = new AliexpressSolutionProductInfoGetRequest;
     $req1->setProductId($ID);
@@ -86,8 +89,7 @@ function getEAN($ID, $c, $sessionKey, $mysqli,$log)
     }
 }
 
-function getStock($sku_code, $mysqli, $log)
-{
+function getStock($sku_code, $mysqli, $log){
 
     $busqueda = $sku_code;
 
@@ -111,8 +113,7 @@ function getStock($sku_code, $mysqli, $log)
     $mysqli->close();
 }
 
-function updateStock($ID, $stock, $sku_code, $c, $sessionKey, $log)
-{
+function updateStock($ID, $stock, $sku_code, $c, $sessionKey, $log){
     //DOC https://developers.aliexpress.com/en/api.htm?spm=a219a.7386653.0.0.17b89b716umhk7&source=search&docId=45135&docType=2
     $req2 = new AliexpressSolutionBatchProductInventoryUpdateRequest;
 
@@ -137,10 +138,8 @@ function updateStock($ID, $stock, $sku_code, $c, $sessionKey, $log)
     //var_dump($resp);
 }
 
-class Log
-{
-    public function __construct($log_name, $page_name)
-    {
+class Log{
+    public function __construct($log_name, $page_name){
         if (!file_exists('logs/'.date('d_m_Y'))) {
             $log_name = date('d_m_Y') . '.log';
         }
@@ -152,16 +151,12 @@ class Log
         $this->log_file = 'logs/'.$this->log_name;
         $this->log = fopen($this->log_file, 'a');
     }
-    public function log_msg($msg)
-    { //the action
+    public function log_msg($msg){ //write the msg
         $log_line = join(' : ', array(date('d/m/Y h:i:s'), $this->page_name, $this->app_id, $msg));
         fwrite($this->log, $log_line . "\n");
     }
-    function __destruct()
-    { //makes sure to close the file and write lines when the process ends.
+    function __destruct(){ //makes sure to close the file and write lines when the process ends.
         //$this->log_msg("Closing log");
         fclose($this->log);
     }
 }
-
-//$log->log_msg('fizzy soda : 45 bubbles remaining per cubic centimeter22');
