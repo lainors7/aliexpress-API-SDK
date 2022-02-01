@@ -12,6 +12,10 @@ if ($mysqli->connect_errno) {
     exit();
 }
 
+//create log file with today date
+
+$log = new Log(date('d_m_Y').'.log', 'feed_Aliexpress.php');
+
 $c = new TopClient;
 $c->appkey;
 $c->secretKey;
@@ -35,8 +39,9 @@ for ($x = 1; $x < $total; $x++) { //search in all pages
 
     $total = $resp->result[0]->total_page; //Total pages
 
-    echo "Total ID's:" . $total;
-    echo "\n";
+    $log->log_msg("Total ID's:" . $total);
+    //echo "Total ID's:" . $total;
+    //echo "\n";
 
     //var_dump($resp);
 
@@ -46,14 +51,15 @@ for ($x = 1; $x < $total; $x++) { //search in all pages
 
         for ($i = 0; $i < $tam; $i++) {
             $ID = $resp->result[0]->aeop_a_e_product_display_d_t_o_list->item_display_dto[$i]->product_id;
-            getEAN($ID, $c, $sessionKey, $mysqli);
+            getEAN($ID, $c, $sessionKey, $mysqli, $log);
         }
     } else {
-        echo "No articles found.";
+        $log->log_msg("No articles found.");
+        //echo "No articles found.";
     }
 }
 
-function getEAN($ID, $c, $sessionKey, $mysqli)
+function getEAN($ID, $c, $sessionKey, $mysqli,$log)
 {
     //DOC https://developers.aliexpress.com/en/api.htm?spm=a219a.7386653.0.0.65a99b71oRgD5c&source=search&docId=42383&docType=2
     $req1 = new AliexpressSolutionProductInfoGetRequest;
@@ -64,28 +70,31 @@ function getEAN($ID, $c, $sessionKey, $mysqli)
     $tam = $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku->count();
     //var_dump ( $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku->ean_code);
     //var_dump ( $resp->result[0]->aeop_ae_product_s_k_us);
-    echo "EAN Quantity: ". $tam;
+    $log->log_msg("EAN Quantity: ". $tam);
+    //echo "EAN Quantity: ". $tam;
     for ($i = 0; $i < $tam; $i++) {
         //echo $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku[$i]->ean_code;
-        echo "\n";
+        //echo "\n";
         //LOOP THE EAN TO GET THE STOCK OF EACH
         $sku_code = $resp->result[0]->aeop_ae_product_s_k_us->global_aeop_ae_product_sku[$i]->ean_code;
-        echo "El sku: ".$sku_code;
-        echo "\n";
-        $stock = getStock($sku_code, $mysqli);
+        $log->log_msg("El sku: ".$sku_code);
+        //echo "El sku: ".$sku_code;
+        //echo "\n";
+        $stock = getStock($sku_code, $mysqli, $log);
         //AND UPDATE STOCK IN ALIEXPRESS
-        updateStock($ID, $stock, $sku_code, $c, $sessionKey);
+        updateStock($ID, $stock, $sku_code, $c, $sessionKey, $log);
     }
 }
 
-function getStock($sku_code, $mysqli)
+function getStock($sku_code, $mysqli, $log)
 {
 
     $busqueda = $sku_code;
 
     /*Make the query */
     if ($resultado = $mysqli->query("SELECT int_amount FROM stocks WHERE str_stock_ean = {$busqueda}")) {
-        printf("The query Return %d files.\n", $resultado->num_rows);
+        $log->log_msg('The query Return '.$resultado->num_rows.' files.');
+        //printf("The query Return %d files.\n", $resultado->num_rows);
         if ($resultado->num_rows != 0) {
 
             $EAN = mysqli_fetch_row($resultado)[0];
@@ -102,7 +111,7 @@ function getStock($sku_code, $mysqli)
     $mysqli->close();
 }
 
-function updateStock($ID, $stock, $sku_code, $c, $sessionKey)
+function updateStock($ID, $stock, $sku_code, $c, $sessionKey, $log)
 {
     //DOC https://developers.aliexpress.com/en/api.htm?spm=a219a.7386653.0.0.17b89b716umhk7&source=search&docId=45135&docType=2
     $req2 = new AliexpressSolutionBatchProductInventoryUpdateRequest;
@@ -120,10 +129,39 @@ function updateStock($ID, $stock, $sku_code, $c, $sessionKey)
     $mutiple_product_update_list->multiple_sku_update_list = $multiple_sku_update_list;
 
     $req2->setMutipleProductUpdateList(json_encode($mutiple_product_update_list));
-
-    echo "The ID product: " . $ID . " - and the ean: " . $sku_code . " - update with stock: " . $stock;
-    echo "\n";
+    $log->log_msg("The ID product: " . $ID . " - and the ean: " . $sku_code . " - update with stock: " . $stock);
+    //echo "The ID product: " . $ID . " - and the ean: " . $sku_code . " - update with stock: " . $stock;
+    //echo "\n";
     
     $resp = $c->execute($req2, $sessionKey);
     //var_dump($resp);
 }
+
+class Log
+{
+    public function __construct($log_name, $page_name)
+    {
+        if (!file_exists('logs/'.date('d_m_Y'))) {
+            $log_name = date('d_m_Y') . '.log';
+        }
+        $this->log_name = $log_name;
+
+        $this->app_id = uniqid(); //give each process a unique ID for differentiation
+        $this->page_name = $page_name;
+
+        $this->log_file = 'logs/'.$this->log_name;
+        $this->log = fopen($this->log_file, 'a');
+    }
+    public function log_msg($msg)
+    { //the action
+        $log_line = join(' : ', array(date('d/m/Y h:i:s'), $this->page_name, $this->app_id, $msg));
+        fwrite($this->log, $log_line . "\n");
+    }
+    function __destruct()
+    { //makes sure to close the file and write lines when the process ends.
+        //$this->log_msg("Closing log");
+        fclose($this->log);
+    }
+}
+
+//$log->log_msg('fizzy soda : 45 bubbles remaining per cubic centimeter22');
