@@ -25,6 +25,7 @@ Place it in the main folder, you now just should only see the "SDK" folder.
 
 Then clone the repo and move the files to this main folder. You wil see.
 
+/logs
 /SDK
 README.md
 config-sample.php
