@@ -62,6 +62,7 @@ for ($x = 1; $x < $total; $x++) { //search in all pages
         $log->log_msg("No articles found.");
         //echo "No articles found.";
     }
+    $log->log_msg("----------------------End update stocks----------------------");
 }
 
 function getEAN($ID, $c, $sessionKey, $mysqli,$log){
