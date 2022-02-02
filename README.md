@@ -19,6 +19,7 @@ https://developers.aliexpress.com/en/doc.htm?spm=a219a.7386653.0.0.52cb9b710V1E5
 
 # Setting up
 Create a folder, and rename it with "logs".
+
 Create a folder, and put in the SDK folder and rename it like "SDK". 
 Then go to "SDK/top/TopClient" and search "$appKey" and assign it the value of your AppKey and do the same with the "$secretKey" with your App Secret.
 
